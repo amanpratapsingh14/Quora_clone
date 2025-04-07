@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2> Question Title: {{ question.title }}</h2>
+    <p> question description:-  {{ question.description }}</p>
+    <p>Asked by {{ question.created_by.username }} on {{ question.timestamp }}</p>
+    <h3>Answers</h3>
+    <ul>
+        {% for answer in answers %}
+            <li>
+                <p>{{ answer.text }}</p>
+                <p>Answered by {{ answer.created_by.username }} on {{ answer.timestamp }}</p>
+                <p>{{ answer.likes.count }} likes</p>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'like_answer' answer.id %}">
+                        {% csrf_token %}
+                        {% if user in answer.likes.all %}
+                            <button type="submit">Unlike</button>
+                        {% else %}
+                            <button type="submit">Like</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if user.is_authenticated %}
+        <h3>Post an Answer</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Answer</button>
+        </form>
+    {% endif %}
+{% endblock %}
